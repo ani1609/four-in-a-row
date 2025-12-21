@@ -8,6 +8,8 @@ import (
 	"4-in-a-row/config"
 	"4-in-a-row/db"
 	"4-in-a-row/handlers"
+
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -49,15 +51,33 @@ func main() {
 		}
 	}
 
-	http.HandleFunc("/", handlers.RootHandler)
-	http.HandleFunc("/health", handlers.HealthHandler)
-	http.HandleFunc("/ws", handlers.WSHandler)
-	http.HandleFunc("/leaderboard", handlers.LeaderboardHandler)
-	http.HandleFunc("/metrics", handlers.GameMetricsHandler)
-	http.HandleFunc("/recent-games", handlers.RecentGamesHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", handlers.RootHandler)
+	mux.HandleFunc("/health", handlers.HealthHandler)
+	mux.HandleFunc("/ws", handlers.WSHandler)
+	mux.HandleFunc("/leaderboard", handlers.LeaderboardHandler)
+	mux.HandleFunc("/metrics", handlers.GameMetricsHandler)
+	mux.HandleFunc("/recent-games", handlers.RecentGamesHandler)
+
+	// CORS
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+			http.MethodOptions,
+			http.MethodHead,
+		},
+		AllowedHeaders: []string{"*"},
+	})
+
+	handler := c.Handler(mux)
 
 	log.Printf("Server listening on :%s", cfg.Port)
-	if err := http.ListenAndServe(":"+cfg.Port, nil); err != nil {
+	if err := http.ListenAndServe(":"+cfg.Port, handler); err != nil {
 		log.Fatal("Server error: ", err)
 	}
 }
