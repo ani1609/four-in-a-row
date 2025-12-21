@@ -1,8 +1,8 @@
 package db
 
 import (
+	"4-in-a-row/config"
 	"log"
-	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -17,21 +17,21 @@ type PlayerData struct {
 }
 
 type MoveData struct {
-	MoveNumber int    `json:"moveNumber"`
-	Player     int    `json:"player"`
-	Column     int    `json:"column"`
-	Row        int    `json:"row"`
-	Timestamp  int64  `json:"timestamp"` // Unix timestamp
+	MoveNumber int   `json:"moveNumber"`
+	Player     int   `json:"player"`
+	Column     int   `json:"column"`
+	Row        int   `json:"row"`
+	Timestamp  int64 `json:"timestamp"` // Unix timestamp
 }
 
 type GameResult struct {
-	ID        uint         `gorm:"primaryKey"`
-	GameID    string       `gorm:"index"`
-	Player1   PlayerData   `gorm:"type:jsonb;serializer:json"`
-	Player2   PlayerData   `gorm:"type:jsonb;serializer:json"`
-	Winner    string
-	Moves     []MoveData   `gorm:"type:jsonb;serializer:json"`
-	Duration  int64        // Seconds
+	ID        uint       `gorm:"primaryKey"`
+	GameID    string     `gorm:"index"`
+	Player1   PlayerData `gorm:"type:jsonb;serializer:json"`
+	Player2   PlayerData `gorm:"type:jsonb;serializer:json"`
+	Winner    string     `gorm:"index"`
+	Moves     []MoveData `gorm:"type:jsonb;serializer:json"`
+	Duration  int64
 	CreatedAt time.Time
 }
 
@@ -39,13 +39,14 @@ var DB *gorm.DB
 
 // InitDB initializes the database connection and runs migrations
 func InitDB() error {
-	dsn := os.Getenv("DATABASE_URL")
+	cfg := config.Get()
+	dsn := cfg.DatabaseURL
 	if dsn == "" {
-		return &ConfigError{"DATABASE_URL environment variable not set"}
+		return &ConfigError{"DATABASE_URL not configured"}
 	}
 
 	log.Println("Connecting to database...")
-	
+
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -56,13 +57,13 @@ func InitDB() error {
 	if err != nil {
 		return err
 	}
-	
+
 	sqlDB.SetMaxIdleConns(10)
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	// Auto-migrate schema
-	if err := DB.AutoMigrate(&GameResult{}); err != nil {
+	if err := DB.AutoMigrate(&GameResult{}, &PlayerStats{}, &GameMetrics{}); err != nil {
 		return err
 	}
 

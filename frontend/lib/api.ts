@@ -1,6 +1,6 @@
-import type { LeaderboardEntry, GameMetrics, RecentGame } from "./types";
+import type { LeaderboardEntry, GameMetrics, RecentGame } from './types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080';
 
 export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
   try {
@@ -11,7 +11,7 @@ export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
     const data = await response.json();
     return data || [];
   } catch (error) {
-    console.error("Error fetching leaderboard:", error);
+    console.error('Error fetching leaderboard:', error);
     return [];
   }
 }
@@ -24,7 +24,7 @@ export async function fetchMetrics(): Promise<GameMetrics | null> {
     }
     return await response.json();
   } catch (error) {
-    console.error("Error fetching metrics:", error);
+    console.error('Error fetching metrics:', error);
     return null;
   }
 }
@@ -38,7 +38,7 @@ export async function fetchRecentGames(): Promise<RecentGame[]> {
     const data = await response.json();
     return data || [];
   } catch (error) {
-    console.error("Error fetching recent games:", error);
+    console.error('Error fetching recent games:', error);
     return [];
   }
 }

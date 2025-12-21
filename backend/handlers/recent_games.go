@@ -36,6 +36,12 @@ func RecentGamesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Return empty array if no games
+	if len(games) == 0 {
+		json.NewEncoder(w).Encode([]RecentGameResponse{})
+		return
+	}
+
 	// Transform to response format
 	response := make([]RecentGameResponse, len(games))
 	for i, game := range games {

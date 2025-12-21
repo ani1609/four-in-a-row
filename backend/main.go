@@ -3,51 +3,59 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"4-in-a-row/analytics"
+	"4-in-a-row/config"
 	"4-in-a-row/db"
 	"4-in-a-row/handlers"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	log.Println("Starting 4-in-a-row Game Server...")
 
-	// Load .env file for local development (ignored in production)
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, using environment variables")
-	}
+	cfg := config.Load()
 
-	// Initialize Database
 	if err := db.InitDB(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Initialize Kafka (optional)
-	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
-	if kafkaBrokers != "" {
-		analytics.InitKafka([]string{kafkaBrokers}, "game-analytics")
-		log.Println("Kafka analytics enabled")
-	} else {
-		log.Println("Kafka analytics disabled")
+	streamConfig := make(map[string]string)
+
+	switch cfg.EventStream {
+	case "kafka":
+		if cfg.KafkaBrokers != "" {
+			streamConfig["brokers"] = cfg.KafkaBrokers
+			streamConfig["topic"] = cfg.KafkaTopic
+			if err := analytics.InitEventStream("kafka", streamConfig); err != nil {
+				log.Printf("Failed to initialize Kafka: %v", err)
+			} else {
+				log.Println("Kafka analytics enabled")
+			}
+		} else {
+			log.Println("Kafka analytics disabled (no KAFKA_BROKERS_LOCAL set)")
+		}
+	case "redis":
+		if cfg.RedisURL != "" {
+			streamConfig["url"] = cfg.RedisURL
+			streamConfig["password"] = cfg.RedisPassword
+			streamConfig["stream"] = cfg.RedisStream
+			if err := analytics.InitEventStream("redis", streamConfig); err != nil {
+				log.Printf("Failed to initialize Redis: %v", err)
+			} else {
+				log.Println("Redis Streams analytics enabled")
+			}
+		} else {
+			log.Println("Redis analytics disabled (no REDIS_URL set)")
+		}
 	}
 
-	// Setup HTTP routes
 	http.HandleFunc("/ws", handlers.WSHandler)
 	http.HandleFunc("/leaderboard", handlers.LeaderboardHandler)
 	http.HandleFunc("/metrics", handlers.GameMetricsHandler)
 	http.HandleFunc("/recent-games", handlers.RecentGamesHandler)
 
-	// Start server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	log.Printf("Server listening on :%s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	log.Printf("Server listening on :%s", cfg.Port)
+	if err := http.ListenAndServe(":"+cfg.Port, nil); err != nil {
 		log.Fatal("Server error: ", err)
 	}
 }

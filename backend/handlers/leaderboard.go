@@ -14,7 +14,7 @@ type LeaderboardEntry struct {
 
 func LeaderboardHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	
+
 	if db.DB == nil {
 		http.Error(w, "Database not initialized", http.StatusInternalServerError)
 		return
@@ -32,6 +32,11 @@ func LeaderboardHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	// Return empty array if no results (avoid null in JSON)
+	if results == nil {
+		results = []LeaderboardEntry{}
 	}
 
 	json.NewEncoder(w).Encode(results)

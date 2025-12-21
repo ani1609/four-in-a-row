@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import type { PlayerInfo, PlayerSymbol } from "@/lib/types";
-import { Badge } from "@/components/ui/badge";
-import { User, Bot } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { PlayerInfo, PlayerSymbol } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { User, Bot } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface GameHeaderProps {
   you: PlayerInfo;
@@ -25,23 +25,23 @@ export function GameHeader({
         {/* You */}
         <div
           className={cn(
-            "flex-1 p-3 rounded-lg border transition-all",
+            'flex-1 p-3 rounded-lg border transition-all',
             yourTurn
-              ? "border-primary bg-primary/10 shadow-lg"
-              : "border-border/50 bg-card/50"
+              ? 'border-primary bg-primary/10 shadow-lg'
+              : 'border-border/50 bg-card/50'
           )}
         >
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                "w-6 h-6 rounded-full",
-                you.symbol === 1 ? "bg-player-1" : "bg-player-2"
+                'w-6 h-6 rounded-full',
+                you.symbol === 1 ? 'bg-player-1' : 'bg-player-2'
               )}
             />
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{you.username}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                {you.type === "bot" ? (
+                {you.type === 'bot' ? (
                   <Bot className="h-3 w-3" />
                 ) : (
                   <User className="h-3 w-3" />
@@ -63,23 +63,23 @@ export function GameHeader({
         {/* Opponent */}
         <div
           className={cn(
-            "flex-1 p-3 rounded-lg border transition-all",
+            'flex-1 p-3 rounded-lg border transition-all',
             !yourTurn
-              ? "border-primary bg-primary/10 shadow-lg"
-              : "border-border/50 bg-card/50"
+              ? 'border-primary bg-primary/10 shadow-lg'
+              : 'border-border/50 bg-card/50'
           )}
         >
           <div className="flex items-center gap-2">
             <div
               className={cn(
-                "w-6 h-6 rounded-full",
-                opponent.symbol === 1 ? "bg-player-1" : "bg-player-2"
+                'w-6 h-6 rounded-full',
+                opponent.symbol === 1 ? 'bg-player-1' : 'bg-player-2'
               )}
             />
             <div className="flex-1 min-w-0">
               <p className="font-medium truncate">{opponent.username}</p>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                {opponent.type === "bot" ? (
+                {opponent.type === 'bot' ? (
                   <Bot className="h-3 w-3" />
                 ) : (
                   <User className="h-3 w-3" />

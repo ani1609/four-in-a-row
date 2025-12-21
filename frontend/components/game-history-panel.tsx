@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { History, Trophy } from "lucide-react";
-import type { RecentGame } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { History, Trophy } from 'lucide-react';
+import type { RecentGame } from '@/lib/types';
 
 interface GameHistoryPanelProps {
   games: RecentGame[];
@@ -14,9 +14,9 @@ export function GameHistoryPanel({
   isLoading = false,
 }: GameHistoryPanelProps) {
   const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
     });
   };
 
@@ -55,8 +55,8 @@ export function GameHistoryPanel({
                   <span
                     className={`truncate ${
                       isWinner(game, game.player1)
-                        ? "text-primary font-medium"
-                        : "text-muted-foreground"
+                        ? 'text-primary font-medium'
+                        : 'text-muted-foreground'
                     }`}
                   >
                     {game.player1}
@@ -65,8 +65,8 @@ export function GameHistoryPanel({
                   <span
                     className={`truncate ${
                       isWinner(game, game.player2)
-                        ? "text-primary font-medium"
-                        : "text-muted-foreground"
+                        ? 'text-primary font-medium'
+                        : 'text-muted-foreground'
                     }`}
                   >
                     {game.player2}
@@ -75,7 +75,7 @@ export function GameHistoryPanel({
 
                 {/* Winner indicator */}
                 <div className="flex items-center gap-1 shrink-0">
-                  {game.winner !== "draw" ? (
+                  {game.winner !== 'draw' ? (
                     <Trophy className="h-3 w-3 text-chart-2" />
                   ) : (
                     <span className="text-xs text-muted-foreground">Draw</span>

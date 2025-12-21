@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { ConnectionState } from "@/lib/types";
-import { Loader2, WifiOff, RefreshCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import type { ConnectionState } from '@/lib/types';
+import { Loader2, WifiOff, RefreshCcw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ConnectionOverlayProps {
   state: ConnectionState;
@@ -10,16 +10,16 @@ interface ConnectionOverlayProps {
 }
 
 export function ConnectionOverlay({ state, onRetry }: ConnectionOverlayProps) {
-  if (state === "connected") return null;
+  if (state === 'connected') return null;
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center">
       <div className="text-center p-6 rounded-xl bg-card border border-border max-w-sm mx-4">
-        {state === "connecting" || state === "reconnecting" ? (
+        {state === 'connecting' || state === 'reconnecting' ? (
           <>
             <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
             <h3 className="text-lg font-semibold mb-2">
-              {state === "connecting" ? "Connecting..." : "Reconnecting..."}
+              {state === 'connecting' ? 'Connecting...' : 'Reconnecting...'}
             </h3>
             <p className="text-sm text-muted-foreground">
               Please wait while we establish a connection to the game server.

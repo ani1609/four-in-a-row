@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   AlertDialog,
@@ -9,7 +9,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
 interface DisconnectWarningDialogProps {
   isOpen: boolean;
@@ -29,7 +29,7 @@ export function DisconnectWarningDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            {isInQueue ? "Leave Queue?" : "Leave Game?"}
+            {isInQueue ? 'Leave Queue?' : 'Leave Game?'}
           </AlertDialogTitle>
           <AlertDialogDescription>
             {isInQueue

@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Trophy, Frown, Handshake } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Trophy, Frown, Handshake } from 'lucide-react';
 
 interface GameResultModalProps {
   isOpen: boolean;
@@ -24,12 +24,12 @@ export function GameResultModal({
   onClickOkay,
 }: GameResultModalProps) {
   const isWinner = winner === yourUsername;
-  const isDraw = winner === "draw";
+  const isDraw = winner === 'draw';
 
   const getTitle = () => {
     if (isDraw) return "It's a Draw!";
-    if (isWinner) return "You Won!";
-    return "You Lost";
+    if (isWinner) return 'You Won!';
+    return 'You Lost';
   };
 
   const getIcon = () => {
@@ -47,10 +47,10 @@ export function GameResultModal({
           <DialogTitle className="text-2xl">{getTitle()}</DialogTitle>
           <DialogDescription>
             {isDraw
-              ? "Great game! Neither player could claim victory."
+              ? 'Great game! Neither player could claim victory.'
               : isWinner
-              ? "Congratulations on your victory!"
-              : `${winner} won this round. Better luck next time!`}
+                ? 'Congratulations on your victory!'
+                : `${winner} won this round. Better luck next time!`}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 mt-4">

@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import useSWR from "swr";
-import { JoinGameForm } from "@/components/join-game-form";
-import { LeaderboardPanel } from "@/components/leaderboard-panel";
-import { MetricsPanel } from "@/components/metrics-panel";
-import { GameHistoryPanel } from "@/components/game-history-panel";
-import { ConnectionOverlay } from "@/components/connection-overlay";
-import { GameBoard } from "@/components/game-board";
-import { GameHeader } from "@/components/game-header";
-import { GameResultModal } from "@/components/game-result-modal";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { useWebSocketContext } from "@/lib/contexts";
-import { fetchLeaderboard, fetchMetrics, fetchRecentGames } from "@/lib/api";
+import { useState, useEffect, useCallback } from 'react';
+import useSWR from 'swr';
+import { JoinGameForm } from '@/components/join-game-form';
+import { LeaderboardPanel } from '@/components/leaderboard-panel';
+import { MetricsPanel } from '@/components/metrics-panel';
+import { GameHistoryPanel } from '@/components/game-history-panel';
+import { ConnectionOverlay } from '@/components/connection-overlay';
+import { GameBoard } from '@/components/game-board';
+import { GameHeader } from '@/components/game-header';
+import { GameResultModal } from '@/components/game-result-modal';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useWebSocketContext } from '@/lib/contexts';
+import { fetchLeaderboard, fetchMetrics, fetchRecentGames } from '@/lib/api';
 import type {
   WSMessage,
   GameState,
   Grid,
   LastMove,
   RecentGame,
-} from "@/lib/types";
-import { Gamepad2, Trophy, Play, Film } from "lucide-react";
+} from '@/lib/types';
+import { Gamepad2, Trophy, Play, History } from 'lucide-react';
+import { Navbar } from '@/components/navbar';
 
 // Create empty 6x7 grid
 function createEmptyGrid(): Grid {
@@ -43,9 +43,9 @@ export default function HomePage() {
   const [isWaiting, setIsWaiting] = useState(false);
 
   // View state
-  const [viewMode, setViewMode] = useState<"lobby" | "game">("lobby");
-  const [sidebarTab, setSidebarTab] = useState<"play" | "stats" | "history">(
-    "play"
+  const [viewMode, setViewMode] = useState<'lobby' | 'game'>('lobby');
+  const [sidebarTab, setSidebarTab] = useState<'play' | 'stats' | 'history'>(
+    'play'
   );
 
   // Game state
@@ -56,7 +56,7 @@ export default function HomePage() {
 
   // Data fetching
   const { data: leaderboard, isLoading: leaderboardLoading } = useSWR(
-    "leaderboard",
+    'leaderboard',
     fetchLeaderboard,
     {
       refreshInterval: 30000,
@@ -65,14 +65,14 @@ export default function HomePage() {
   );
 
   const { data: metrics, isLoading: metricsLoading } = useSWR(
-    "metrics",
+    'metrics',
     fetchMetrics,
     { refreshInterval: 30000 }
   );
 
   const { data: recentGames, isLoading: recentGamesLoading } = useSWR<
     RecentGame[]
-  >("recent-games", fetchRecentGames, {
+  >('recent-games', fetchRecentGames, {
     refreshInterval: 30000,
     fallbackData: [],
   });
@@ -81,7 +81,7 @@ export default function HomePage() {
   const handleMessage = useCallback(
     (message: WSMessage) => {
       switch (message.type) {
-        case "GAME_START":
+        case 'GAME_START':
           saveSession({
             playerId: message.payload.you.playerId!,
             username: message.payload.you.username,
@@ -97,13 +97,13 @@ export default function HomePage() {
               : message.payload.opponent.symbol,
             yourTurn: message.payload.yourTurn,
             moveNumber: 0,
-            status: "active",
+            status: 'active',
           });
-          setViewMode("game");
+          setViewMode('game');
           setIsWaiting(false);
           break;
 
-        case "GAME_UPDATE":
+        case 'GAME_UPDATE':
           setGameState((prev: GameState | null) => {
             if (!prev) return prev;
             return {
@@ -117,12 +117,12 @@ export default function HomePage() {
           setLastMove(message.payload.lastMove);
           break;
 
-        case "GAME_OVER":
+        case 'GAME_OVER':
           setGameState((prev: GameState | null) => {
             if (!prev) return prev;
             return {
               ...prev,
-              status: "finished",
+              status: 'finished',
               winner: message.payload.winner,
             };
           });
@@ -130,7 +130,7 @@ export default function HomePage() {
           removeSession();
           break;
 
-        case "RECONNECT":
+        case 'RECONNECT':
           saveSession({
             playerId: message.payload.you.playerId!,
             username: message.payload.you.username,
@@ -144,15 +144,15 @@ export default function HomePage() {
             currentTurn: message.payload.currentTurn,
             yourTurn: message.payload.yourTurn,
             moveNumber: message.payload.moveNumber,
-            status: "active",
+            status: 'active',
           });
-          setViewMode("game");
+          setViewMode('game');
           break;
 
-        case "ERROR":
+        case 'ERROR':
           setError(message.payload);
           setIsWaiting(false);
-          if (message.payload.includes("not found")) {
+          if (message.payload.includes('not found')) {
             removeSession();
           }
           break;
@@ -166,7 +166,7 @@ export default function HomePage() {
       setError(null);
       setIsWaiting(true);
       sendMessage({
-        type: "JOIN_QUEUE",
+        type: 'JOIN_QUEUE',
         payload: username,
       });
     },
@@ -175,10 +175,10 @@ export default function HomePage() {
 
   const handleColumnClick = useCallback(
     (column: number) => {
-      if (!gameState || !gameState.yourTurn || gameState.status !== "active")
+      if (!gameState || !gameState.yourTurn || gameState.status !== 'active')
         return;
       sendMessage({
-        type: "MOVE",
+        type: 'MOVE',
         payload: {
           gameId: gameState.gameId,
           column,
@@ -191,7 +191,7 @@ export default function HomePage() {
   const handleGameCleanup = useCallback(() => {
     setGameState(null);
     setLastMove(null);
-    setViewMode("lobby");
+    setViewMode('lobby');
     setShowResult(false);
   }, []);
 
@@ -205,27 +205,27 @@ export default function HomePage() {
 
   // Warn before leaving if in queue or active game
   useEffect(() => {
-    const shouldWarn = isWaiting || gameState?.status === "active";
+    const shouldWarn = isWaiting || gameState?.status === 'active';
 
     if (!shouldWarn) return;
 
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = ""; // Browser will show default confirmation dialog
-      return "";
+      e.returnValue = ''; // Browser will show default confirmation dialog
+      return '';
     };
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [isWaiting, gameState]);
 
   // Handle visibility change (tab switch/minimize)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.hidden && (isWaiting || gameState?.status === "active")) {
+      if (document.hidden && (isWaiting || gameState?.status === 'active')) {
         // Update disconnect timestamp when tab becomes hidden
         if (gameState) {
           saveSession({
@@ -238,10 +238,10 @@ export default function HomePage() {
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [isWaiting, gameState, saveSession]);
 
@@ -249,34 +249,8 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <ConnectionOverlay state={connectionState} onRetry={reconnect} />
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <Gamepad2 className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">4-in-a-Row</h1>
-                <p className="text-sm text-muted-foreground">
-                  Real-time multiplayer
-                </p>
-              </div>
-            </div>
-            {/* Status badges */}
-            <div className="flex items-center gap-2">
-              {viewMode === "game" && gameState && (
-                <Badge
-                  variant={gameState.yourTurn ? "default" : "secondary"}
-                  className="animate-pulse"
-                >
-                  {gameState.yourTurn ? "Your Turn" : "Opponent's Turn"}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Navbar viewMode={viewMode} gameState={gameState} />
+
       {/* Main content */}
       <main className="container mx-auto px-4 py-6">
         <div className="grid gap-6 lg:grid-cols-12">
@@ -296,8 +270,8 @@ export default function HomePage() {
                   Stats
                 </TabsTrigger>
                 <TabsTrigger value="history" className="gap-1">
-                  <Film className="h-3 w-3" />
-                  Replays
+                  <History className="h-3 w-3" />
+                  History
                 </TabsTrigger>
               </TabsList>
 
@@ -334,7 +308,7 @@ export default function HomePage() {
           <div className="lg:col-span-8 xl:col-span-9">
             <div className="bg-card/30 border border-border/50 rounded-xl p-6 min-h-150 flex flex-col">
               {/* Lobby view - waiting state */}
-              {viewMode === "lobby" && !isWaiting && (
+              {viewMode === 'lobby' && !isWaiting && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
                   <div className="p-6 rounded-full bg-primary/10">
                     <Gamepad2 className="h-16 w-16 text-primary" />
@@ -372,7 +346,7 @@ export default function HomePage() {
               )}
 
               {/* Lobby view - waiting for opponent */}
-              {viewMode === "lobby" && isWaiting && (
+              {viewMode === 'lobby' && isWaiting && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center gap-6">
                   <div className="relative">
                     <div className="p-6 rounded-full bg-primary/10 animate-pulse">
@@ -396,7 +370,7 @@ export default function HomePage() {
               )}
 
               {/* Live game view */}
-              {viewMode === "game" && gameState && (
+              {viewMode === 'game' && gameState && (
                 <div className="flex-1 flex flex-col items-center gap-6">
                   <GameHeader
                     you={gameState.you}
@@ -409,7 +383,7 @@ export default function HomePage() {
                     grid={gameState.grid}
                     onColumnClick={handleColumnClick}
                     canInteract={
-                      gameState.yourTurn && gameState.status === "active"
+                      gameState.yourTurn && gameState.status === 'active'
                     }
                     lastMove={lastMove}
                     hoverColumn={hoverColumn}

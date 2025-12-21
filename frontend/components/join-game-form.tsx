@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import type React from "react";
+import type React from 'react';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Play, Wifi, WifiOff } from "lucide-react";
-import type { ConnectionState } from "@/lib/types";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Play, Wifi, WifiOff } from 'lucide-react';
+import type { ConnectionState } from '@/lib/types';
 
 interface JoinGameFormProps {
   onJoin: (username: string) => void;
@@ -22,12 +22,12 @@ export function JoinGameForm({
   error,
   isWaiting,
 }: JoinGameFormProps) {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const validateUsername = (name: string): boolean => {
     const trimmed = name.trim().toLowerCase();
-    if (trimmed === "bot" || trimmed === "draw") {
+    if (trimmed === 'bot' || trimmed === 'draw') {
       setValidationError("Username cannot be 'bot' or 'draw'");
       return false;
     }
@@ -43,9 +43,9 @@ export function JoinGameForm({
     }
   };
 
-  const isConnected = connectionState === "connected";
+  const isConnected = connectionState === 'connected';
   const isConnecting =
-    connectionState === "connecting" || connectionState === "reconnecting";
+    connectionState === 'connecting' || connectionState === 'reconnecting';
 
   return (
     <Card className="border-border/50 bg-card/50 backdrop-blur">
@@ -111,7 +111,7 @@ export function JoinGameForm({
               !username.trim() || !isConnected || isWaiting || !!validationError
             }
           >
-            {isWaiting ? "Searching..." : "Find Match"}
+            {isWaiting ? 'Searching...' : 'Find Match'}
           </Button>
         </form>
       </CardContent>

@@ -1,11 +1,9 @@
-# Go binaries
-server
-main
+# Go build artifacts
+build/
+bin/
 *.exe
 *.out
 *.test
-bin/
-dist/
 
 # Go workspace
 go.work
@@ -19,8 +17,9 @@ go.work.sum
 # Logs
 *.log
 
-# IDE / editor
-.vscode/
+# IDE / editor (VS Code settings kept)
+.vscode/*
+!.vscode/settings.json
 .idea/
 *.swp
 .DS_Store

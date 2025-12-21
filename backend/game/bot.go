@@ -1,8 +1,8 @@
 package game
 
 type BotAI struct {
-	board *Board
-	botSymbol int
+	board          *Board
+	botSymbol      int
 	opponentSymbol int
 }
 

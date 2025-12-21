@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import type { Grid, LastMove, PlayerSymbol } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { Grid, LastMove, PlayerSymbol } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 interface GameBoardProps {
   grid: Grid;
@@ -42,8 +42,8 @@ export function GameBoard({
             {canInteract && hoverColumn === col && currentPlayerSymbol && (
               <div
                 className={cn(
-                  "w-8 h-8 md:w-10 md:h-10 rounded-full opacity-50 animate-pulse",
-                  currentPlayerSymbol === 1 ? "bg-player-1" : "bg-player-2"
+                  'w-8 h-8 md:w-10 md:h-10 rounded-full opacity-50 animate-pulse',
+                  currentPlayerSymbol === 1 ? 'bg-player-1' : 'bg-player-2'
                 )}
               />
             )}
@@ -64,22 +64,22 @@ export function GameBoard({
                   onMouseLeave={() => setHoverColumn(null)}
                   disabled={!canInteract}
                   className={cn(
-                    "w-10 h-10 md:w-12 md:h-12 rounded-full transition-all duration-200",
-                    "flex items-center justify-center",
+                    'w-10 h-10 md:w-12 md:h-12 rounded-full transition-all duration-200',
+                    'flex items-center justify-center',
                     canInteract
-                      ? "cursor-pointer hover:scale-105"
-                      : "cursor-default",
-                    cell === 0 && "bg-board-cell",
-                    cell === 1 && "bg-player-1 shadow-lg",
-                    cell === 2 && "bg-player-2 shadow-lg",
+                      ? 'cursor-pointer hover:scale-105'
+                      : 'cursor-default',
+                    cell === 0 && 'bg-board-cell',
+                    cell === 1 && 'bg-player-1 shadow-lg',
+                    cell === 2 && 'bg-player-2 shadow-lg',
                     isWinningCell(rowIndex, colIndex) &&
-                      "ring-4 ring-white/50 animate-pulse",
+                      'ring-4 ring-white/50 animate-pulse',
                     isLastMove(rowIndex, colIndex) &&
                       cell !== 0 &&
-                      "ring-2 ring-white/30"
+                      'ring-2 ring-white/30'
                   )}
                   aria-label={`Column ${colIndex + 1}, Row ${rowIndex + 1}, ${
-                    cell === 0 ? "empty" : cell === 1 ? "Player 1" : "Player 2"
+                    cell === 0 ? 'empty' : cell === 1 ? 'Player 1' : 'Player 2'
                   }`}
                 />
               ))}

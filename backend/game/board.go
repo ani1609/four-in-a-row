@@ -42,7 +42,7 @@ func (b *Board) CheckWin(row, col, player int) bool {
 
 	for _, d := range directions {
 		count := 1
-		
+
 		// Check forward
 		for i := 1; i < 4; i++ {
 			r, c := row+d[0]*i, col+d[1]*i

@@ -16,7 +16,7 @@ type Game struct {
 	Player1    *Player
 	Player2    *Player
 	Board      *Board
-	Turn       int // 1 or 2
+	Turn       int    // 1 or 2
 	State      string // "active", "finished"
 	Winner     int    // 0 = none, 1 = p1, 2 = p2, 3 = draw
 	Mutex      sync.Mutex
@@ -62,7 +62,7 @@ func (g *Game) Start() {
 			YourTurn: true,
 		},
 	})
-	
+
 	g.Player1.IsConnected = true
 
 	g.Player2.SendMessage(Message{
@@ -83,9 +83,9 @@ func (g *Game) Start() {
 			YourTurn: false,
 		},
 	})
-	
+
 	g.Player2.IsConnected = true
-	
+
 	log.Printf("Game %s started: %s vs %s", g.ID, g.Player1.Username, g.Player2.Username)
 }
 
@@ -174,7 +174,7 @@ func (g *Game) BroadcastUpdate(lastRow, lastCol int) {
 func (g *Game) BroadcastGameOver() {
 	winnerStr := ""
 	winnerName := ""
-	
+
 	if g.Winner == 1 {
 		winnerStr = g.Player1.Username
 		winnerName = g.Player1.Username
@@ -194,9 +194,9 @@ func (g *Game) BroadcastGameOver() {
 	}
 	g.Player1.SendMessage(msg)
 	g.Player2.SendMessage(msg)
-	
+
 	duration := int64(time.Since(g.StartTime).Seconds())
-	
+
 	// Log game result
 	if g.Winner == 3 {
 		log.Printf("Game %s ended in a DRAW between %s and %s (Duration: %ds)",
@@ -205,7 +205,7 @@ func (g *Game) BroadcastGameOver() {
 		log.Printf("Game %s WON by %s! (%s vs %s, Duration: %ds)",
 			g.ID, winnerName, g.Player1.Username, g.Player2.Username, duration)
 	}
-	
+
 	// Prepare player data
 	p1Data := db.PlayerData{
 		ID:       g.Player1.ID,
@@ -219,10 +219,10 @@ func (g *Game) BroadcastGameOver() {
 		Symbol:   g.Player2.Symbol,
 		Type:     getPlayerType(g.Player2),
 	}
-	
+
 	// Persist game result with moves
 	db.SaveGameResult(g.ID, p1Data, p2Data, winnerStr, g.Moves, duration)
-	
+
 	// Emit Kafka event
 	analytics.EmitGameEnd(g.ID, winnerStr, duration)
 }
@@ -230,16 +230,16 @@ func (g *Game) BroadcastGameOver() {
 func (g *Game) TriggerBotMove() {
 	// Realistic delay
 	time.Sleep(500 * time.Millisecond)
-	
+
 	// Use smart bot AI
 	bot := &BotAI{
 		board:          g.Board,
 		botSymbol:      2, // Bot is always player 2
 		opponentSymbol: 1,
 	}
-	
+
 	col := bot.GetBestMove()
-	
+
 	if col != -1 {
 		g.HandleMove(g.Player2, col)
 	}
@@ -248,33 +248,33 @@ func (g *Game) TriggerBotMove() {
 func (g *Game) HandleDisconnect(player *Player) {
 	g.Mutex.Lock()
 	defer g.Mutex.Unlock()
-	
+
 	if g.State != "active" {
 		return
 	}
-	
+
 	log.Printf("Player %s disconnected from game %s", player.Username, g.ID)
 	player.IsConnected = false
 	player.DisconnectedAt = time.Now()
-	
+
 	go func() {
 		time.Sleep(30 * time.Second)
 		g.Mutex.Lock()
 		defer g.Mutex.Unlock()
-		
+
 		if g.State == "active" && !player.IsConnected {
 			log.Printf("Player %s timed out. Forfeiting game %s.", player.Username, g.ID)
-			
+
 			g.State = "finished"
-			
+
 			if player.Symbol == 1 {
 				g.Winner = 2
 			} else {
 				g.Winner = 1
 			}
-			
+
 			g.BroadcastGameOver()
-			
+
 			GameManagerInstance.RemoveGame(g.ID)
 		}
 	}()
@@ -283,11 +283,11 @@ func (g *Game) HandleDisconnect(player *Player) {
 func (g *Game) HandleReconnect(playerID string, conn *websocket.Conn) (*Player, bool) {
 	g.Mutex.Lock()
 	defer g.Mutex.Unlock()
-	
+
 	if g.State != "active" && g.State != "finished" {
 		return nil, false
 	}
-	
+
 	var p *Player
 	if g.Player1.ID == playerID {
 		p = g.Player1
@@ -296,14 +296,14 @@ func (g *Game) HandleReconnect(playerID string, conn *websocket.Conn) (*Player, 
 	} else {
 		return nil, false
 	}
-	
+
 	p.Conn = conn
 	p.IsConnected = true
-	
+
 	log.Printf("Player %s reconnected to game %s", p.Username, g.ID)
-	
+
 	opponent := GetOpponent(g, p)
-	
+
 	reconnectMsg := Message{
 		Type: MsgReconnect,
 		Payload: ReconnectPayload{
@@ -336,7 +336,7 @@ func (g *Game) HandleReconnect(playerID string, conn *websocket.Conn) (*Player, 
 		} else {
 			winnerStr = "draw"
 		}
-		
+
 		p.SendMessage(Message{
 			Type: MsgGameOver,
 			Payload: GameOverPayload{
@@ -344,7 +344,7 @@ func (g *Game) HandleReconnect(playerID string, conn *websocket.Conn) (*Player, 
 			},
 		})
 	}
-	
+
 	return p, true
 }
 

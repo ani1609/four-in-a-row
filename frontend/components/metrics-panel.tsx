@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart3, Users, Timer, Gamepad2 } from "lucide-react";
-import type { GameMetrics } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart3, Users, Timer, Gamepad2 } from 'lucide-react';
+import type { GameMetrics } from '@/lib/types';
 
 interface MetricsPanelProps {
   metrics: GameMetrics | null;
@@ -18,28 +18,28 @@ export function MetricsPanel({ metrics, isLoading }: MetricsPanelProps) {
 
   const stats = [
     {
-      label: "Total Games",
+      label: 'Total Games',
       value: metrics?.totalGames ?? 0,
       icon: Gamepad2,
-      color: "text-primary",
+      color: 'text-primary',
     },
     {
-      label: "Total Players",
+      label: 'Total Players',
       value: metrics?.totalPlayers ?? 0,
       icon: Users,
-      color: "text-[var(--player-2)]",
+      color: 'text-[var(--player-2)]',
     },
     {
-      label: "Avg Duration",
-      value: metrics ? formatDuration(metrics.averageDuration) : "0m 0s",
+      label: 'Avg Duration',
+      value: metrics ? formatDuration(metrics.averageDuration) : '0m 0s',
       icon: Timer,
-      color: "text-[var(--player-1)]",
+      color: 'text-[var(--player-1)]',
     },
     {
-      label: "Games Today",
+      label: 'Games Today',
       value: metrics?.gamesToday ?? 0,
       icon: BarChart3,
-      color: "text-green-500",
+      color: 'text-green-500',
     },
   ];
 

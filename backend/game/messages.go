@@ -44,15 +44,15 @@ type GameUpdatePayload struct {
 }
 
 type ReconnectPayload struct {
-	GameID     string          `json:"gameId"`
-	You        PlayerInfo      `json:"you"`
-	Opponent   PlayerInfo      `json:"opponent"`
-	Grid       [Rows][Cols]int `json:"grid"`
-	CurrentTurn int            `json:"currentTurn"`
-	YourTurn   bool            `json:"yourTurn"`
-	MoveNumber int             `json:"moveNumber"`
+	GameID      string          `json:"gameId"`
+	You         PlayerInfo      `json:"you"`
+	Opponent    PlayerInfo      `json:"opponent"`
+	Grid        [Rows][Cols]int `json:"grid"`
+	CurrentTurn int             `json:"currentTurn"`
+	YourTurn    bool            `json:"yourTurn"`
+	MoveNumber  int             `json:"moveNumber"`
 }
 
 type GameOverPayload struct {
-	Winner   string `json:"winner"` // "1", "2", or "draw"
+	Winner string `json:"winner"` // "1", "2", or "draw"
 }

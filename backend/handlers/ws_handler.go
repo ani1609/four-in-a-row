@@ -13,7 +13,7 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool { return true },
+	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
 func WSHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +25,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	log.Println("New Client Connected")
-	
+
 	var currentPlayer *game.Player
 
 	defer func() {
@@ -34,7 +34,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 			if removed {
 				log.Printf("Player %s removed from matchmaking queue on disconnect", currentPlayer.Username)
 			}
-			
+
 			g := game.GameManagerInstance.GetGameByPlayerID(currentPlayer.ID)
 			if g != nil {
 				g.HandleDisconnect(currentPlayer)
@@ -58,12 +58,12 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				username = "Anonymous"
 			}
-			
+
 			if game.GlobalMatchmaker.IsPlayerInQueue(username) {
 				conn.WriteJSON(game.Message{Type: game.MsgError, Payload: "Username already taken"})
 				continue
 			}
-			
+
 			existingPlayer, existingGame := game.GameManagerInstance.GetPlayerByUsername(username)
 			if existingPlayer != nil && existingGame != nil {
 				if !existingPlayer.IsConnected {
@@ -80,22 +80,22 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 					continue
 				}
 			}
-			
+
 			player := &game.Player{
 				ID:       uuid.New().String(),
 				Username: username,
 				Conn:     conn,
 			}
-			
+
 			currentPlayer = player
 			game.GlobalMatchmaker.AddPlayer(player)
-			
+
 		case game.MsgReconnect:
 			playerID, ok := msg.Payload.(string)
 			if !ok {
 				continue
 			}
-			
+
 			g := game.GameManagerInstance.GetGameByPlayerID(playerID)
 			if g != nil {
 				p, success := g.HandleReconnect(playerID, conn)
@@ -113,7 +113,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 			if !ok {
 				continue
 			}
-			
+
 			gameID, _ := payload["gameId"].(string)
 			col, _ := payload["column"].(float64)
 
@@ -127,7 +127,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 				} else if g.Player2.Conn == conn {
 					p = g.Player2
 				}
-				
+
 				if p != nil {
 					g.HandleMove(p, int(col))
 				}

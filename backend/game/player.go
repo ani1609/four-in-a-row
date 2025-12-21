@@ -1,15 +1,15 @@
 package game
 
 import (
-	"time"
 	"github.com/gorilla/websocket"
+	"time"
 )
 
 type Player struct {
-	ID       string
-	Username string
-	Conn     *websocket.Conn
-	IsBot    bool
+	ID             string
+	Username       string
+	Conn           *websocket.Conn
+	IsBot          bool
 	Symbol         int // 1 or 2
 	IsConnected    bool
 	DisconnectedAt time.Time

@@ -9,26 +9,27 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+// Legacy Kafka writer (kept for backward compatibility)
 var Writer *kafka.Writer
 
+// InitKafka initializes legacy Kafka writer (deprecated - use InitEventStream)
 func InitKafka(brokers []string, topic string) {
 	Writer = &kafka.Writer{
 		Addr:     kafka.TCP(brokers...),
 		Topic:    topic,
 		Balancer: &kafka.LeastBytes{},
 	}
-	log.Println("Kafka Writer initialized")
+	log.Println("Kafka Writer initialized (legacy)")
 }
 
-type GameEvent struct {
-	Event     string    `json:"event"`
-	GameID    string    `json:"gameId"`
-	Winner    string    `json:"winner"`
-	Duration  int64     `json:"duration"`
-	Timestamp time.Time `json:"timestamp"`
-}
-
+// EmitGameEnd emits a game end event (uses new event stream abstraction)
 func EmitGameEnd(gameID, winner string, duration int64) {
+	// Try new abstraction first
+	if err := PublishGameCompleted(gameID, winner, duration); err == nil {
+		return
+	}
+
+	// Fallback to legacy Kafka writer
 	if Writer == nil {
 		return
 	}

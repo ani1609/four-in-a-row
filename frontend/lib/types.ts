@@ -1,5 +1,5 @@
 export type PlayerSymbol = 1 | 2;
-export type PlayerType = "human" | "bot";
+export type PlayerType = 'human' | 'bot';
 export type CellValue = 0 | 1 | 2;
 export type Grid = CellValue[][];
 
@@ -22,7 +22,7 @@ export interface GameState {
   currentTurn: PlayerSymbol;
   yourTurn: boolean;
   moveNumber: number;
-  status: "waiting" | "active" | "finished";
+  status: 'waiting' | 'active' | 'finished';
   winner?: string;
 }
 
@@ -52,7 +52,7 @@ export type WSMessage =
   | ErrorMessage;
 
 export interface GameStartMessage {
-  type: "GAME_START";
+  type: 'GAME_START';
   payload: {
     gameId: string;
     you: PlayerInfo;
@@ -62,7 +62,7 @@ export interface GameStartMessage {
 }
 
 export interface GameUpdateMessage {
-  type: "GAME_UPDATE";
+  type: 'GAME_UPDATE';
   payload: {
     grid: Grid;
     currentTurn: PlayerSymbol;
@@ -72,14 +72,14 @@ export interface GameUpdateMessage {
 }
 
 export interface GameOverMessage {
-  type: "GAME_OVER";
+  type: 'GAME_OVER';
   payload: {
     winner: string;
   };
 }
 
 export interface ReconnectMessage {
-  type: "RECONNECT";
+  type: 'RECONNECT';
   payload: {
     gameId: string;
     you: PlayerInfo;
@@ -92,7 +92,7 @@ export interface ReconnectMessage {
 }
 
 export interface ErrorMessage {
-  type: "ERROR";
+  type: 'ERROR';
   payload: string;
 }
 
@@ -130,7 +130,7 @@ export interface RecentGame {
 // ============= Connection State =============
 
 export type ConnectionState =
-  | "connecting"
-  | "connected"
-  | "reconnecting"
-  | "disconnected";
+  | 'connecting'
+  | 'connected'
+  | 'reconnecting'
+  | 'disconnected';

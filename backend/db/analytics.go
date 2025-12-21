@@ -6,7 +6,7 @@ import (
 
 // PlayerStats tracks user-specific metrics
 type PlayerStats struct {
-	ID            uint `gorm:"primaryKey"`
+	ID            uint   `gorm:"primaryKey"`
 	Username      string `gorm:"uniqueIndex"`
 	TotalGames    int
 	Wins          int
@@ -19,7 +19,7 @@ type PlayerStats struct {
 
 // GameMetrics tracks overall gameplay metrics
 type GameMetrics struct {
-	ID              uint `gorm:"primaryKey"`
+	ID              uint      `gorm:"primaryKey"`
 	Date            time.Time `gorm:"index"`
 	Hour            int
 	GamesPlayed     int
@@ -35,7 +35,7 @@ func UpdatePlayerStats(username string, won bool, isDraw bool, duration int64) e
 	}
 
 	var stats PlayerStats
-	
+
 	result := DB.Where(PlayerStats{Username: username}).FirstOrCreate(&stats)
 	if result.Error != nil {
 		return result.Error
@@ -66,7 +66,7 @@ func UpdateGameMetrics(duration int64, timestamp time.Time) error {
 	hour := timestamp.Hour()
 
 	var metrics GameMetrics
-	
+
 	result := DB.Where(GameMetrics{Date: date, Hour: hour}).FirstOrCreate(&metrics)
 	if result.Error != nil {
 		return result.Error
@@ -89,5 +89,3 @@ func GetTopPlayers(limit int) ([]PlayerStats, error) {
 	err := DB.Order("wins DESC").Limit(limit).Find(&players).Error
 	return players, err
 }
-
-

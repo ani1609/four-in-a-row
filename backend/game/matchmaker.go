@@ -31,7 +31,7 @@ func (m *Matchmaker) IsPlayerInQueue(username string) bool {
 func (m *Matchmaker) RemovePlayer(player *Player) bool {
 	m.Mutex.Lock()
 	defer m.Mutex.Unlock()
-	
+
 	for i, p := range m.Queue {
 		if p == player || p.ID == player.ID {
 			// Remove player from queue
@@ -46,10 +46,10 @@ func (m *Matchmaker) RemovePlayer(player *Player) bool {
 func (m *Matchmaker) AddPlayer(p *Player) {
 	m.Mutex.Lock()
 	defer m.Mutex.Unlock()
-	
+
 	m.Queue = append(m.Queue, p)
 	log.Printf("Player %s added to queue. Queue size: %d", p.Username, len(m.Queue))
-	
+
 	if len(m.Queue) >= 2 {
 		p1 := m.Queue[0]
 		p2 := m.Queue[1]
@@ -62,10 +62,10 @@ func (m *Matchmaker) AddPlayer(p *Player) {
 
 func (m *Matchmaker) WaitForMatch(p *Player) {
 	time.Sleep(10 * time.Second)
-	
+
 	m.Mutex.Lock()
 	defer m.Mutex.Unlock()
-	
+
 	found := false
 	for i, qp := range m.Queue {
 		if qp == p {
@@ -74,7 +74,7 @@ func (m *Matchmaker) WaitForMatch(p *Player) {
 			break
 		}
 	}
-	
+
 	if found {
 		log.Printf("Timeout for player %s. Starting bot game.", p.Username)
 		bot := &Player{
@@ -89,9 +89,9 @@ func (m *Matchmaker) WaitForMatch(p *Player) {
 func (m *Matchmaker) StartGame(p1, p2 *Player) {
 	gameID := uuid.New().String()
 	game := NewGame(gameID, p1, p2)
-	
+
 	go game.Start()
-	
+
 	GameManagerInstance.AddGame(game)
 }
 
@@ -136,7 +136,7 @@ func (gm *GameManager) GetGameByPlayerID(playerID string) *Game {
 func (gm *GameManager) RemoveGame(id string) {
 	gm.Mutex.Lock()
 	defer gm.Mutex.Unlock()
-	
+
 	if g, ok := gm.Games[id]; ok {
 		delete(gm.PlayerGames, g.Player1.ID)
 		if !g.Player2.IsBot {
@@ -149,7 +149,7 @@ func (gm *GameManager) RemoveGame(id string) {
 func (gm *GameManager) IsUsernameTaken(username string) bool {
 	gm.Mutex.RLock()
 	defer gm.Mutex.RUnlock()
-	
+
 	for _, g := range gm.Games {
 		if g.State == "active" {
 			if g.Player1.Username == username && g.Player1.IsConnected {
@@ -166,7 +166,7 @@ func (gm *GameManager) IsUsernameTaken(username string) bool {
 func (gm *GameManager) GetPlayerByUsername(username string) (*Player, *Game) {
 	gm.Mutex.RLock()
 	defer gm.Mutex.RUnlock()
-	
+
 	for _, g := range gm.Games {
 		if g.State == "active" {
 			if g.Player1.Username == username {

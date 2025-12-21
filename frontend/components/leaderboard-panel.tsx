@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trophy, Medal } from "lucide-react";
-import type { LeaderboardEntry } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Trophy, Medal } from 'lucide-react';
+import type { LeaderboardEntry } from '@/lib/types';
 
 interface LeaderboardPanelProps {
   entries: LeaderboardEntry[];
@@ -43,12 +43,12 @@ export function LeaderboardPanel({
                   <span
                     className={`text-sm font-mono w-6 text-center ${
                       index === 0
-                        ? "text-player-2"
+                        ? 'text-player-2'
                         : index === 1
-                        ? "text-gray-400"
-                        : index === 2
-                        ? "text-orange-400"
-                        : "text-muted-foreground"
+                          ? 'text-gray-400'
+                          : index === 2
+                            ? 'text-orange-400'
+                            : 'text-muted-foreground'
                     }`}
                   >
                     {index < 3 ? (

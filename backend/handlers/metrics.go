@@ -10,10 +10,10 @@ import (
 
 // GameMetricsResponse represents the overall game analytics
 type GameMetricsResponse struct {
-	TotalGames      int     `json:"totalGames"`
-	TotalPlayers    int     `json:"totalPlayers"`
-	AverageDuration float64 `json:"averageDuration"`
-	GamesToday      int     `json:"gamesToday"`
+	TotalGames      int              `json:"totalGames"`
+	TotalPlayers    int              `json:"totalPlayers"`
+	AverageDuration float64          `json:"averageDuration"`
+	GamesToday      int              `json:"gamesToday"`
 	RecentActivity  []HourlyActivity `json:"recentActivity"`
 }
 
@@ -27,7 +27,7 @@ func GameMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	// Enable CORS
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	
+
 	if db.DB == nil {
 		http.Error(w, "Database not initialized", http.StatusInternalServerError)
 		return
@@ -41,9 +41,9 @@ func GameMetricsHandler(w http.ResponseWriter, r *http.Request) {
 	var totalPlayers int64
 	db.DB.Model(&db.PlayerStats{}).Count(&totalPlayers)
 
-	// Get average duration
+	// Get average duration (use COALESCE to handle NULL when no games exist)
 	var avgDuration float64
-	db.DB.Model(&db.GameResult{}).Select("AVG(duration)").Scan(&avgDuration)
+	db.DB.Model(&db.GameResult{}).Select("COALESCE(AVG(duration), 0)").Scan(&avgDuration)
 
 	// Get games today
 	today := time.Now().Truncate(24 * time.Hour)
