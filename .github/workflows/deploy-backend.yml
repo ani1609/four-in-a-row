@@ -47,9 +47,13 @@ jobs:
             echo "Pulling latest Docker image..."
             docker pull ani1609/four-in-a-row-backend:latest
 
-            echo "Stopping old container if exists..."
-            docker stop four-in-a-row || true
-            docker rm four-in-a-row || true
+            echo "Stopping old container named 'four-in-a-row-backend'..."
+            docker stop four-in-a-row-backend || true
+            docker rm four-in-a-row-backend || true
+
+            echo "Stopping/removing any container using port 8080..."
+            docker ps -q --filter "publish=8080" | xargs -r docker stop
+            docker ps -a -q --filter "publish=8080" | xargs -r docker rm
 
             echo "Running new container with environment variables..."
             docker run -d -p 8080:8080 \
@@ -59,4 +63,5 @@ jobs:
               -e REDIS_URL_CLOUD="${{ secrets.REDIS_URL_CLOUD }}" \
               -e REDIS_STREAM=game-events \
               -e PORT=8080 \
+              --name four-in-a-row-backend \
               ani1609/four-in-a-row-backend:latest
