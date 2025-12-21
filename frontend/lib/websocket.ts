@@ -1,8 +1,7 @@
 // WebSocket client for real-time game communication
 
 import type { WSMessage } from './types';
-
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080/ws';
+import { config } from './config';
 
 // Session storage keys
 const SESSION_KEY = 'game_session';
@@ -81,7 +80,7 @@ export function isSessionValid(): boolean {
  * @returns A new WebSocket instance
  */
 export function createWebSocket(): WebSocket {
-  return new WebSocket(WS_URL);
+  return new WebSocket(config.wsUrl);
 }
 
 /**
