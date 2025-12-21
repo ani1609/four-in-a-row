@@ -61,17 +61,22 @@ func main() {
 
 	// CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins: []string{
+			"http://localhost:3000",
+			"https://four-in-a-row.myselfankit.tech",
+		},
 		AllowedMethods: []string{
 			http.MethodGet,
 			http.MethodPost,
 			http.MethodPut,
 			http.MethodPatch,
 			http.MethodDelete,
-			http.MethodOptions,
-			http.MethodHead,
 		},
-		AllowedHeaders: []string{"*"},
+		AllowedHeaders: []string{
+			"Content-Type",
+			"Authorization",
+		},
+		AllowCredentials: true,
 	})
 
 	handler := c.Handler(mux)
