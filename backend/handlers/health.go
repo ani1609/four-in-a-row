@@ -15,7 +15,7 @@ type HealthResponse struct {
 func HealthHandler(w http.ResponseWriter, r *http.Request) {
 	response := HealthResponse{
 		Status:  "ok",
-		Message: "Server is running",
+		Message: "Four in a Row server is running",
 	}
 
 	w.Header().Set("Content-Type", "application/json")
