@@ -153,5 +153,3 @@ pnpm build             # Production build
 
 - Run `go mod tidy` in backend
 - Run `pnpm install` in frontend
-
-## CI/CD Testing
