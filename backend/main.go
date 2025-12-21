@@ -49,6 +49,7 @@ func main() {
 		}
 	}
 
+	http.HandleFunc("/health", handlers.HealthHandler)
 	http.HandleFunc("/ws", handlers.WSHandler)
 	http.HandleFunc("/leaderboard", handlers.LeaderboardHandler)
 	http.HandleFunc("/metrics", handlers.GameMetricsHandler)
