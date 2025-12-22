@@ -147,6 +147,8 @@ export default function HomePage() {
             status: 'active',
           });
           setViewMode('game');
+          setIsWaiting(false);
+          setError(null);
           break;
 
         case 'ERROR':
@@ -154,6 +156,13 @@ export default function HomePage() {
           setIsWaiting(false);
           if (message.payload.includes('not found')) {
             removeSession();
+          }
+          // If error says already in game, stop waiting and stay in current view
+          if (
+            message.payload.includes('already in') ||
+            message.payload.includes('already playing')
+          ) {
+            setIsWaiting(false);
           }
           break;
       }
@@ -165,6 +174,7 @@ export default function HomePage() {
     (username: string) => {
       setError(null);
       setIsWaiting(true);
+      setGameState(null);
       sendMessage({
         type: 'JOIN_QUEUE',
         payload: username,
@@ -281,6 +291,7 @@ export default function HomePage() {
                   connectionState={connectionState}
                   error={error}
                   isWaiting={isWaiting}
+                  hasActiveGame={gameState?.status === 'active'}
                 />
               </TabsContent>
 

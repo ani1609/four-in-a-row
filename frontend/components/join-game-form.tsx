@@ -14,6 +14,7 @@ interface JoinGameFormProps {
   connectionState: ConnectionState;
   error: string | null;
   isWaiting: boolean;
+  hasActiveGame?: boolean;
 }
 
 export function JoinGameForm({
@@ -21,6 +22,7 @@ export function JoinGameForm({
   connectionState,
   error,
   isWaiting,
+  hasActiveGame = false,
 }: JoinGameFormProps) {
   const [username, setUsername] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -67,7 +69,7 @@ export function JoinGameForm({
                   validateUsername(e.target.value);
                 }
               }}
-              disabled={!isConnected || isWaiting}
+              disabled={!isConnected || isWaiting || hasActiveGame}
               className="bg-input/50"
             />
           </div>
@@ -97,6 +99,13 @@ export function JoinGameForm({
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
+          {hasActiveGame && (
+            <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/20 p-3 rounded-md">
+              <Play className="h-4 w-4" />
+              <span>You are currently in an active game</span>
+            </div>
+          )}
+
           {isWaiting && (
             <div className="flex items-center gap-2 text-sm text-primary">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -108,10 +117,10 @@ export function JoinGameForm({
             type="submit"
             className="w-full"
             disabled={
-              !username.trim() || !isConnected || isWaiting || !!validationError
+              !username.trim() || !isConnected || isWaiting || !!validationError || hasActiveGame
             }
           >
-            {isWaiting ? 'Searching...' : 'Find Match'}
+            {isWaiting ? 'Searching...' : hasActiveGame ? 'Already in Game' : 'Find Match'}
           </Button>
         </form>
       </CardContent>
