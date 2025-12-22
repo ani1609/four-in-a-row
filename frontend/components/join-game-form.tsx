@@ -117,10 +117,18 @@ export function JoinGameForm({
             type="submit"
             className="w-full"
             disabled={
-              !username.trim() || !isConnected || isWaiting || !!validationError || hasActiveGame
+              !username.trim() ||
+              !isConnected ||
+              isWaiting ||
+              !!validationError ||
+              hasActiveGame
             }
           >
-            {isWaiting ? 'Searching...' : hasActiveGame ? 'Already in Game' : 'Find Match'}
+            {isWaiting
+              ? 'Searching...'
+              : hasActiveGame
+                ? 'Already in Game'
+                : 'Find Match'}
           </Button>
         </form>
       </CardContent>

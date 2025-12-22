@@ -59,14 +59,26 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 				username = "Anonymous"
 			}
 
+			// Check if username is already in matchmaking queue
 			if game.GlobalMatchmaker.IsPlayerInQueue(username) {
-				conn.WriteJSON(game.Message{Type: game.MsgError, Payload: "Username already taken"})
+				conn.WriteJSON(game.Message{Type: game.MsgError, Payload: "Username already in matchmaking queue"})
 				continue
 			}
 
+			// Check if current player is already in an active game
+			if currentPlayer != nil {
+				playerGame := game.GameManagerInstance.GetGameByPlayerID(currentPlayer.ID)
+				if playerGame != nil && playerGame.State == "active" {
+					conn.WriteJSON(game.Message{Type: game.MsgError, Payload: "You are already in an active game"})
+					continue
+				}
+			}
+
+			// Check if username exists in an active game
 			existingPlayer, existingGame := game.GameManagerInstance.GetPlayerByUsername(username)
 			if existingPlayer != nil && existingGame != nil {
 				if !existingPlayer.IsConnected {
+					// Player disconnected, allow reconnection
 					log.Printf("User %s reconnecting to game %s", username, existingGame.ID)
 					reconnectedPlayer, success := existingGame.HandleReconnect(existingPlayer.ID, conn)
 					if success {
@@ -76,7 +88,8 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					continue
 				} else {
-					conn.WriteJSON(game.Message{Type: game.MsgError, Payload: "Username already taken"})
+					// Player is connected in another session
+					conn.WriteJSON(game.Message{Type: game.MsgError, Payload: "Username already in use"})
 					continue
 				}
 			}

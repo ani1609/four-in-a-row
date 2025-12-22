@@ -225,6 +225,13 @@ func (g *Game) BroadcastGameOver() {
 
 	// Emit Kafka event
 	analytics.EmitGameEnd(g.ID, winnerStr, duration)
+
+	// Clean up game after a short delay to allow clients to receive game over message
+	go func() {
+		time.Sleep(5 * time.Second)
+		GameManagerInstance.RemoveGame(g.ID)
+		log.Printf("Game %s cleaned up from active games", g.ID)
+	}()
 }
 
 func (g *Game) TriggerBotMove() {
