@@ -47,7 +47,9 @@ Edit `.env` and set:
 
 - `RESOURCE_ENVIRONMENT=local` (for Option A) or `cloud` (for Option B)
 - Update database and Redis URLs accordingly
-- Set `EVENT_STREAM=redis`
+- Set `EVENT_STREAM=redis` (or `kafka` for local development)
+
+**Note on Event Streaming**: While the requirements specify Kafka, we use **Redis Streams in production** via Upstash (managed, cost-effective). Kafka requires self-hosting or expensive managed services. Both Redis and Kafka are supported—switch via `EVENT_STREAM` env variable. Local development can use either (Docker Compose includes both).
 
 #### 4. Build Backend
 
