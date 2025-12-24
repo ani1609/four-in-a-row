@@ -1,9 +1,15 @@
 'use client';
 
-import type { PlayerInfo, PlayerSymbol } from '@/lib/types';
+import { useState, useEffect } from 'react';
+import type {
+  PlayerInfo,
+  PlayerSymbol,
+  PlayerStatusMessage,
+} from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { User, Bot } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useWebSocketContext } from '@/lib/contexts';
 
 interface GameHeaderProps {
   you: PlayerInfo;
@@ -19,6 +25,28 @@ export function GameHeader({
   yourTurn,
   moveNumber,
 }: GameHeaderProps) {
+  const { subscribeToMessages } = useWebSocketContext();
+  const [opponentTimeLeft, setOpponentTimeLeft] = useState<number>(0);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToMessages((message) => {
+      if (message.type === 'PLAYER_STATUS') {
+        const payload = (message as PlayerStatusMessage).payload;
+        // Only track countdown if opponent goes offline
+        if (payload.playerSymbol === opponent.symbol && !payload.isOnline) {
+          setOpponentTimeLeft(payload.timeLeft);
+        } else if (
+          payload.playerSymbol === opponent.symbol &&
+          payload.isOnline
+        ) {
+          setOpponentTimeLeft(0);
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [subscribeToMessages, opponent.symbol]);
+
   return (
     <div className="flex flex-col gap-4 w-full max-w-md mx-auto">
       <div className="flex items-center justify-between gap-4">
@@ -39,7 +67,16 @@ export function GameHeader({
               )}
             />
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{you.username}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium truncate">{you.username}</p>
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-full',
+                    you.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                  )}
+                  title={you.isOnline ? 'Online' : 'Offline'}
+                />
+              </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 {you.type === 'bot' ? (
                   <Bot className="h-3 w-3" />
@@ -77,7 +114,16 @@ export function GameHeader({
               )}
             />
             <div className="flex-1 min-w-0">
-              <p className="font-medium truncate">{opponent.username}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium truncate">{opponent.username}</p>
+                <div
+                  className={cn(
+                    'w-2 h-2 rounded-full',
+                    opponent.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                  )}
+                  title={opponent.isOnline ? 'Online' : 'Offline'}
+                />
+              </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 {opponent.type === 'bot' ? (
                   <Bot className="h-3 w-3" />
@@ -91,6 +137,11 @@ export function GameHeader({
           {!yourTurn && (
             <Badge variant="secondary" className="mt-2 text-xs">
               Their turn
+            </Badge>
+          )}
+          {!opponent.isOnline && opponentTimeLeft > 0 && (
+            <Badge variant="destructive" className="mt-2 text-xs">
+              Reconnecting... {opponentTimeLeft}s
             </Badge>
           )}
         </div>

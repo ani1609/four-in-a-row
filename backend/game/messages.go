@@ -2,13 +2,14 @@ package game
 
 // Message Types
 const (
-	MsgJoinQueue = "JOIN_QUEUE"
-	MsgGameStart = "GAME_START"
-	MsgMove      = "MOVE"
-	MsgUpdate    = "GAME_UPDATE"
-	MsgGameOver  = "GAME_OVER"
-	MsgError     = "ERROR"
-	MsgReconnect = "RECONNECT"
+	MsgJoinQueue    = "JOIN_QUEUE"
+	MsgGameStart    = "GAME_START"
+	MsgMove         = "MOVE"
+	MsgUpdate       = "GAME_UPDATE"
+	MsgGameOver     = "GAME_OVER"
+	MsgError        = "ERROR"
+	MsgReconnect    = "RECONNECT"
+	MsgPlayerStatus = "PLAYER_STATUS"
 )
 
 type Message struct {
@@ -21,6 +22,7 @@ type PlayerInfo struct {
 	Username string `json:"username"`
 	Symbol   int    `json:"symbol"`
 	Type     string `json:"type"` // "human" or "bot"
+	IsOnline bool   `json:"isOnline"`
 }
 
 type GameStartPayload struct {
@@ -55,4 +57,10 @@ type ReconnectPayload struct {
 
 type GameOverPayload struct {
 	Winner string `json:"winner"` // "1", "2", or "draw"
+}
+
+type PlayerStatusPayload struct {
+	PlayerSymbol int  `json:"playerSymbol"`
+	IsOnline     bool `json:"isOnline"`
+	TimeLeft     int  `json:"timeLeft"` // Seconds left before forfeit (0 if online)
 }

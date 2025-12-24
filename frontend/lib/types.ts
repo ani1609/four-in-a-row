@@ -10,6 +10,7 @@ export interface PlayerInfo {
   username: string;
   symbol: PlayerSymbol;
   type: PlayerType;
+  isOnline: boolean;
 }
 
 // ============= Game State =============
@@ -49,6 +50,7 @@ export type WSMessage =
   | GameUpdateMessage
   | GameOverMessage
   | ReconnectMessage
+  | PlayerStatusMessage
   | ErrorMessage;
 
 export interface GameStartMessage {
@@ -94,6 +96,15 @@ export interface ReconnectMessage {
 export interface ErrorMessage {
   type: 'ERROR';
   payload: string;
+}
+
+export interface PlayerStatusMessage {
+  type: 'PLAYER_STATUS';
+  payload: {
+    playerSymbol: PlayerSymbol;
+    isOnline: boolean;
+    timeLeft: number;
+  };
 }
 
 // ============= API Responses =============

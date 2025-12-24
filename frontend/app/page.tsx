@@ -151,6 +151,28 @@ export default function HomePage() {
           setError(null);
           break;
 
+        case 'PLAYER_STATUS':
+          setGameState((prev: GameState | null) => {
+            if (!prev) return prev;
+
+            // Update the status of the player whose symbol matches
+            const updatedYou =
+              prev.you.symbol === message.payload.playerSymbol
+                ? { ...prev.you, isOnline: message.payload.isOnline }
+                : prev.you;
+            const updatedOpponent =
+              prev.opponent.symbol === message.payload.playerSymbol
+                ? { ...prev.opponent, isOnline: message.payload.isOnline }
+                : prev.opponent;
+
+            return {
+              ...prev,
+              you: updatedYou,
+              opponent: updatedOpponent,
+            };
+          });
+          break;
+
         case 'ERROR':
           setError(message.payload);
           setIsWaiting(false);

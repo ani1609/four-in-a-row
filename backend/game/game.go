@@ -53,11 +53,13 @@ func (g *Game) Start() {
 				Username: g.Player1.Username,
 				Symbol:   1,
 				Type:     getPlayerType(g.Player1),
+				IsOnline: true,
 			},
 			Opponent: PlayerInfo{
 				Username: g.Player2.Username,
 				Symbol:   2,
 				Type:     getPlayerType(g.Player2),
+				IsOnline: true,
 			},
 			YourTurn: true,
 		},
@@ -74,11 +76,13 @@ func (g *Game) Start() {
 				Username: g.Player2.Username,
 				Symbol:   2,
 				Type:     getPlayerType(g.Player2),
+				IsOnline: true,
 			},
 			Opponent: PlayerInfo{
 				Username: g.Player1.Username,
 				Symbol:   1,
 				Type:     getPlayerType(g.Player1),
+				IsOnline: true,
 			},
 			YourTurn: false,
 		},
@@ -264,8 +268,55 @@ func (g *Game) HandleDisconnect(player *Player) {
 	player.IsConnected = false
 	player.DisconnectedAt = time.Now()
 
+	// Notify opponent about disconnect
+	opponent := GetOpponent(g, player)
+	opponent.SendMessage(Message{
+		Type: MsgPlayerStatus,
+		Payload: PlayerStatusPayload{
+			PlayerSymbol: player.Symbol,
+			IsOnline:     false,
+			TimeLeft:     30,
+		},
+	})
+
+	// Start countdown timer with updates
 	go func() {
-		time.Sleep(30 * time.Second)
+		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
+
+		startTime := time.Now()
+		for i := 29; i >= 0; i-- {
+			<-ticker.C
+
+			g.Mutex.Lock()
+			if g.State != "active" || player.IsConnected {
+				g.Mutex.Unlock()
+				return
+			}
+
+			elapsed := int(time.Since(startTime).Seconds())
+			timeLeft := 30 - elapsed
+			if timeLeft < 0 {
+				timeLeft = 0
+			}
+
+			opponent := GetOpponent(g, player)
+			opponent.SendMessage(Message{
+				Type: MsgPlayerStatus,
+				Payload: PlayerStatusPayload{
+					PlayerSymbol: player.Symbol,
+					IsOnline:     false,
+					TimeLeft:     timeLeft,
+				},
+			})
+			g.Mutex.Unlock()
+
+			if timeLeft == 0 {
+				break
+			}
+		}
+
+		// Final check after 30 seconds
 		g.Mutex.Lock()
 		defer g.Mutex.Unlock()
 
@@ -311,6 +362,16 @@ func (g *Game) HandleReconnect(playerID string, conn *websocket.Conn) (*Player, 
 
 	opponent := GetOpponent(g, p)
 
+	// Notify opponent about reconnect
+	opponent.SendMessage(Message{
+		Type: MsgPlayerStatus,
+		Payload: PlayerStatusPayload{
+			PlayerSymbol: p.Symbol,
+			IsOnline:     true,
+			TimeLeft:     0,
+		},
+	})
+
 	reconnectMsg := Message{
 		Type: MsgReconnect,
 		Payload: ReconnectPayload{
@@ -320,11 +381,13 @@ func (g *Game) HandleReconnect(playerID string, conn *websocket.Conn) (*Player, 
 				Username: p.Username,
 				Symbol:   p.Symbol,
 				Type:     getPlayerType(p),
+				IsOnline: true,
 			},
 			Opponent: PlayerInfo{
 				Username: opponent.Username,
 				Symbol:   opponent.Symbol,
 				Type:     getPlayerType(opponent),
+				IsOnline: opponent.IsConnected,
 			},
 			Grid:        g.Board.Grid,
 			CurrentTurn: g.Turn,
